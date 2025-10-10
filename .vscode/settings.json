@@ -9,6 +9,7 @@
         "bin/**": true, "tmp/**": true, "ref/**": true,
     },
     "files.associations": {
+        "*.ini": "properties", "*.f": "properties"
     },
 
     // editor

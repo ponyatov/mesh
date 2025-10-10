@@ -6,6 +6,7 @@ int main(int argc, char *argv[]) {  //
         arg(i, argv[i]);
         yyfile = argv[i];
         assert(yyin = fopen(yyfile, "r"));
+        yyparse();
         fclose(yyin);
         yyfile = nullptr;
     }
