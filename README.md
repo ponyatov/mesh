@@ -1,4 +1,4 @@
-# `mesh` 0.0.1
+# ![](doc/logo.png) `mesh` 0.0.1
 ## heterogeneous mesh network prototype
 
 (c) Dmitry Ponyatov <<dponyatov@gmail.com>> 2025 MIT
