@@ -8,3 +8,4 @@ include mk/rule.mk
 include mk/doc.mk
 include mk/python.mk
 include mk/install.mk
+include mk/ai.mk
