@@ -15,6 +15,13 @@ message("-- |   startup: " "${S}")
 message("-- |    linker: " "${LD}")
 message("-- |    binary: " ${CMAKE_INSTALL_PREFIX}/${BIN_OUTPUT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
 message("-- |")
+if(PCAP_FOUND)
+message("-- | PCAP: ${PCAP_VERSION}")
+endif()
+if(DPDK_FOUND)
+message("-- | DPDK: ${DPDK_VERSION}")
+endif()
+message("-- |")
 
 add_executable(${CMAKE_PROJECT_NAME}
     ${C}  ${H}          # C/C++ source

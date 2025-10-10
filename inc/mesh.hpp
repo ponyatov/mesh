@@ -12,6 +12,10 @@ extern int main(int argc, char *argv[]);  ///< POSIX entry point
 extern void arg(int argc, char *argv);    ///< process command line argument
 /// @}
 
+/// @defgroup dpdk dpdk
+/// @{
+/// @}
+
 /// @defgroup skelex skelex
 /// @{
 extern int yylex();                    ///< lexer
