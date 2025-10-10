@@ -16,7 +16,7 @@ S  += $(wildcard lib/*.ini) $(wildcard lib/*.f)
 
 # JavaScript
 T += $(wildcard src/*.ts)
-J += $(wildcard src/*.js)
+J += $(wildcard src/*.js) $(wildcard static/*.js) $(wildcard templates/*.js)
 
 # Python
 P += $(wildcard src/*.py) $(wildcard lib/*.py)
