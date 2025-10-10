@@ -39,4 +39,5 @@ include_directories(${INC})
 
 file(GLOB A
     RELATIVE ${CMAKE_SOURCE_DIR}
+    lib/*.a
 )
