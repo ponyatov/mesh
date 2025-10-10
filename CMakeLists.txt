@@ -21,6 +21,9 @@ endif()
 if(DPDK_FOUND)
 message("-- | DPDK: ${DPDK_VERSION}")
 endif()
+if(PCPP_FOUND)
+message("-- | PCPP: ${PCPP_VERSION}")
+endif()
 message("-- |")
 
 add_executable(${CMAKE_PROJECT_NAME}
