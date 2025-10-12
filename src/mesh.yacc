@@ -2,10 +2,14 @@
     #include "mesh.hpp"
 %}
 
-%defines %union { int n; float f; }
+%defines %union { Object* o; }
 
-%token LIST
+%token LIST DUMP
+%token<o> INT,NUM
 %%
 ini:|ini command    // recursive parsing
 
-command: LIST       { std::cerr << "\nlist NIC's:\n"; }
+command : DUMP      { dump();   }
+        | LIST      { list();   }
+        | INT       { push($1); } 
+        | NUM       { push($1); }

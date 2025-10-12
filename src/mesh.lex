@@ -6,6 +6,9 @@
 
 %x comment
 
+s [+\-]
+n [0-9]
+
 %%
 \#!.*           {}                  // #! shebang
 \#.*            {}                  // # line comment
@@ -14,6 +17,9 @@
 <comment>"*/"   {BEGIN(INITIAL);}   // |
 <comment>.      {}                  // /
 
+{s}{n}+         TOKEN(Int,INT)
+
+"?"             {return DUMP;}
 "list"          {return LIST;}
 
 [ \t\r\n]+      {}                  // drop spaces
