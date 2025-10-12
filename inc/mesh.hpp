@@ -16,6 +16,10 @@ extern void arg(int argc, char *argv);    ///< process command line argument
 /// @{
 /// @}
 
+/// @defgroup vm vm
+/// @{
+/// @}
+
 /// @defgroup skelex skelex
 /// @{
 extern int yylex();                    ///< lexer

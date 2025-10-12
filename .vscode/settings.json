@@ -93,5 +93,8 @@
         "env": {
           "MSYSTEM": "UCRT64",
           "CHERE_INVOKING": "1",
-        }}},
+        }
+    }
+},
+"python.REPL.enableREPLSmartSend": false,
 }
