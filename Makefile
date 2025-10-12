@@ -6,7 +6,6 @@ include mk/src.mk
 include mk/all.mk
 include mk/rule.mk
 include mk/doc.mk
-include mk/python.mk
 include mk/ref.mk
 include mk/gz.mk
 include mk/install.mk
