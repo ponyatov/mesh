@@ -17,7 +17,8 @@ n [0-9]
 <comment>"*/"   {BEGIN(INITIAL);}   // |
 <comment>.      {}                  // /
 
-{s}{n}+         TOKEN(Int,INT)
+{s}?{n}+\.{n}?  TOKEN(Num,NUM)
+{s}?{n}+        TOKEN(Int,INT)
 
 "?"             {return DUMP;}
 "list"          {return LIST;}

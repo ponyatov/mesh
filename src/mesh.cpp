@@ -30,8 +30,8 @@ byte Dp = 0;
 
 void dump() {  //
     std::cerr << "D:[";
-    for (int i = 0; i < Dp; i++) std::cerr << ' ' << D[i];
-    std::cerr << "]\n";
+    for (int i = 0; i < Dp; i++) std::cerr << D[i]->dump(" ");
+    std::cerr << " ]\n";
 }
 
 extern void push(Object *o) {
@@ -58,6 +58,36 @@ Object::Object() : ref(0) {}
 
 Object::~Object() { assert(!ref); }
 
+#include <cxxabi.h>
+
+std::string Object::tag() {
+    std::string ret =
+        abi::__cxa_demangle(typeid(*this).name(), NULL, NULL, nullptr);
+    for (char &c : ret) c = tolower(c);
+    return ret;
+}
+
+std::string Object::val() { return ""; }
+
+std::string Object::dump(std::string prefix) {
+    std::ostringstream os;
+    os << prefix << tag() << ':' << val();
+    return os.str();
+}
+
 Primitive::Primitive() : Object() {}
 
 Int::Int(char *V) : Primitive(), value(atoi(V)) {}
+Num::Num(char *V) : Primitive(), value(atof(V)) {}
+
+std::string Int::val() {
+    std::ostringstream os;
+    os << value;
+    return os.str();
+}
+
+std::string Num::val() {
+    std::ostringstream os;
+    os << value;
+    return os.str();
+}

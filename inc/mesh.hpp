@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <sstream>
 
 /// @defgroup main main
 /// @{
@@ -21,26 +22,42 @@ extern void arg(int argc, char *argv);    ///< process command line argument
 /// @brief root object graph class
 class Object {
     size_t ref;
+    std::string tag();
+    virtual std::string val();
 
    public:
     Object();
     virtual ~Object();
+    virtual std::string dump(std::string prefix = "");
 };
 
+/// @defgroup prim prim
+
+/// @brief primitive types
+/// @ingroup prim
 class Primitive : public Object {
    public:
     Primitive();
 };
 
+/// @brief integer number
+/// @ingroup prim
 class Int : public Primitive {
     int value;
 
    public:
-    Int(char *);
+    Int(char *V);
+    std::string val();
 };
+
+/// @brief floating point number
+/// @ingroup prim
 class Num : public Primitive {
     float value;
-    Num(char *);
+
+   public:
+    Num(char *V);
+    std::string val();
 };
 /// @}
 
