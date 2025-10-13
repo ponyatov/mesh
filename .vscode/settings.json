@@ -64,23 +64,6 @@
     "python.testing.unittestEnabled"   : false,
     "python.testing.pytestEnabled"     : true,
 
-    // Python
-    "python.defaultInterpreterPath":  "${workspaceFolder}/bin/python3",
-    "autopep8.path"                : ["${workspaceFolder}/bin/autopep8"],
-    "autopep8.args"                : ["--ignore","E26,E302,E305,E401,E402,E701,E702"],
-    "python.analysis.extraPaths"   : ["${workspaceFolder}/src", "${workspaceFolder}/lib"],
-    "[python]": { "editor.defaultFormatter" : "ms-python.autopep8" },
-    "ruff.configuration": ".ruff.toml",
-    // "ruff.interpreter": ["${workspaceFolder}/bin/python3"],
-    "ruff.lint.preview": true,
-    "ruff.format.preview": true,
-
-    // Rust
-    "rust-analyzer.checkOnSave"          : false,
-    "rust-analyzer.check.allTargets"     : false,
-    "rust-analyzer.cargo.target"         : "x86_64-unknown-linux-gnu",
-    "rust-analyzer.cargo.features"       : ["pc","i5","x86_64","linux"],
-
     // MinGW/MSYS2
     "terminal.integrated.defaultProfile.windows": "UCRT64",
     "terminal.integrated.profiles.windows": {

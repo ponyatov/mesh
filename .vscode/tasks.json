@@ -16,14 +16,6 @@
             "problemMatcher" : []
         },
         {
-            "label"          : "mesh: server",
-            "type"           : "shell",
-            "command"        : "make server",
-            "problemMatcher" : [],
-            "presentation"   : {"showReuseMessage": true, "focus": true, "reveal": "silent", "close": false},
-            "group"          : {"kind": "build", "isDefault": true}
-        },
-        {
             "label"          : "AI: context",
             "type"           : "shell",
             "command"        : "make ai",

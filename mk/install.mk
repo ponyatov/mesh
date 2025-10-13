@@ -1,9 +1,8 @@
 .PHONY : install update ref gz
-install: $(WS)_install doc ref gz python
+install: $(WS)_install doc ref gz
 	$(MAKE) update
 	$(MAKE) pcpp
 update : $(WS)_update
-	$(PIP) install -U -r requirements.txt
 ref    : $(RF)
 gz     : $(GZ)
 
