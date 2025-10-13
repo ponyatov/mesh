@@ -41,6 +41,7 @@ void push(Object *o) {
 }
 
 Object *pop() {
+    assert(Dp > 0);
     assert(Dp < Dsz);
     Object *o = D[--Dp];
     assert(o->ref);
@@ -49,6 +50,7 @@ Object *pop() {
 }
 
 Object *top() {
+    assert(Dp);
     assert(Dp < Dsz);
     Object *o = D[Dp - 1];
     assert(o->ref);
@@ -57,6 +59,31 @@ Object *top() {
 
 void clear() {
     for (int i = 0; i < Dp; i++) pop();
+}
+
+extern void dup() {  //
+    push(top());
+}
+
+extern void drop() {  //
+    pop();
+}
+
+extern void press() {  //
+    Object *o = pop();
+    pop();
+    push(o);
+}
+
+extern void swap() {  //
+    Object *b = pop();
+    Object *a = pop();
+    push(b);
+    push(a);
+}
+
+extern void over() {  //
+    push(D[Dp - 2]);
 }
 
 Object::Object() : ref(0) {}
@@ -107,7 +134,6 @@ bool Eth::init() {  // int argc, char *argv[]) {  //
 bool Eth::initialized = false;
 
 void Eth::list() {
-    if (!Eth::initialized) Eth::initialized = Eth::init();
     // PCAP
     pcpp::PcapLiveDeviceList &pcapDeviceList =
         pcpp::PcapLiveDeviceList::getInstance();
@@ -127,21 +153,64 @@ void Eth::list() {
         }
     }
     // DPDK
-    // auto dpdkDeviceList = pcpp::DpdkDeviceList::getInstance();
-
+    if (!Eth::initialized) Eth::initialized = Eth::init();
     auto dpdkDeviceList =
         pcpp::DpdkDeviceList::getInstance().getDpdkDeviceList();
     std::cerr << "\nDPDK:";
     for (auto &dev : dpdkDeviceList) {  //
         auto mtu = dev->getMtu();
         if (mtu) {
-            std::cerr << "\n\t" << dev->getDeviceId()           //
+            std::cerr << "\n\tPORT:" << dev->getDeviceId()      //
                       << " ( " << dev->getDeviceName() << " )"  //
                       << "\n\t\tMAC:" << dev->getMacAddress()   //
-                      << "\tMTU:" << mtu                        //
+                      << "\n\t\tPCI:" << dev->getPciAddress()   //
+                      << "\n\t\tPMD:" << dev->getPMDName()      //
+                      << "/" << dev->getPMDType()               //
+                      << "\n\t\tMTU:" << mtu                    //
                 ;
         }
     }
     //
     std::cerr << "\n";
+}
+
+Eth::Eth(int port) : Object() {  //
+    std::cerr << "\nopening port:" << port;
+    dev = pcpp::DpdkDeviceList::getInstance().getDeviceByPort(port);
+    assert(dev != nullptr);
+    id = dev->getDeviceId();
+    name = dev->getDeviceName();
+    pmdname = dev->getPMDName();
+    pmdtype = dev->getPMDType();
+    assert(mtu = dev->getMtu());
+    std::cerr << "\n\tID:" << id                        //
+              << "\tNAME:" << name                      //
+              << "\tMTU:" << mtu                        //
+              << "\tPMD:" << pmdname << '/' << pmdtype  //
+              << "\n";
+}
+
+void Eth::close() {
+    dev->close();  // dev = nullptr;
+}
+
+void Eth::open() {        //
+    assert(dev->open());  // dev->openMultiQueues(1, 1);
+    status();
+}
+
+pcpp::DpdkDevice::LinkStatus &Eth::status() {
+    dev->getLinkStatus(linkStatus);
+    up = linkStatus.linkUp;
+    speed = linkStatus.linkSpeedMbps;
+    duplex =
+        (linkStatus.linkDuplex == pcpp::DpdkDevice::LinkStatus::FULL_DUPLEX);
+    return linkStatus;
+}
+
+std::string Eth::val() {
+    std::ostringstream os;
+    os << id << '/' << name << "#mtu:" << mtu << "#up:" << up
+       << "#duplex:" << duplex << "#speed:" << speed;
+    return os.str();
 }

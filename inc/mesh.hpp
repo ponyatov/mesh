@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -55,9 +56,8 @@ class Primitive : public Object {
 /// @brief integer number
 /// @ingroup prim
 class Int : public Primitive {
-    int value;
-
    public:
+    int value;
     Int(char *V);
     std::string val();
 };
@@ -119,6 +119,13 @@ extern void push(Object *o);  ///< `( -- o )` push to @ref D
 extern Object *pop();         ///< `( o -- )` pop from @ref D
 extern Object *top();         ///< `( o -- o )` get @ref D top
 extern void clear();          ///< `( ... -- )` clear @ref D
+
+extern void dup();    ///< `DUP `( a -- a )`
+extern void drop();   ///< `DROP `( a b -- a )`
+extern void press();  ///< `PRESS `( a b -- b )`
+extern void swap();   ///< `SWAP `( a b -- b a )`
+extern void over();   ///< `OVER `( a b -- a b a )`
+
 /// @}
 
 /// @}
@@ -127,6 +134,7 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 
 /// @defgroup net net
 /// @brief raw networking
+#include "DpdkDevice.h"
 #include "DpdkDeviceList.h"
 #include "PcapLiveDeviceList.h"
 /// @{
@@ -136,10 +144,28 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 class Eth : public Object {
     static bool initialized;
 
-   public:
     static const uint32_t mBufPoolSize = DEFAULT_MBUF_POOL_SIZE;
-    static bool init();  // int argc, char *argv[]);
-    static void list();  ///< list available nic's
+
+    pcpp::DpdkDevice *dev;  ///< DPDK device id
+    int id;                 ///< DPDK port id (for opened @ref dev)
+    std::string name;       ///< DPDK port name
+    int mtu;                ///< MTU packet size
+    std::string pmdname;    ///< driver name
+    int pmdtype;            ///< driver id
+
+    bool up;    ///< @ref linkStatus -> linkUp
+    int speed;  ///< @ref linkStatus -> linkSpeedMbps
+    bool duplex;///< @ref linkStatus -> linkDuplex
+    pcpp::DpdkDevice::LinkStatus linkStatus;  ///< link status info
+
+   public:
+    Eth(int port);                           ///< create nic with DPDK index
+    static bool init();                      // int argc, char *argv[]);
+    static void list();                      ///< list available nic's
+    void open();                             ///< open port with Rx/Tx
+    void close();                            ///< shutdown
+    pcpp::DpdkDevice::LinkStatus &status();  ///< update @ref linkStatus
+    std::string val();                       ///<
 };
 
 /// @}

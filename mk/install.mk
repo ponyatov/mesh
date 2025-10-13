@@ -12,7 +12,8 @@ Debian_update:
 	sudo apt update
 	sudo apt install -uy `cat apt.$(WS)` $(APT)
 
-headless: doc ref gz
-	sudo apt update
-	sudo apt install -uy `cat apt.$(WS).headless` $(APT)
+Ubuntu_install:
+Ubuntu_update: doc ref gz
+# 	sudo apt update
+	sudo apt install -uy `cat apt.$(WS)` $(APT)
 	$(MAKE) pcpp

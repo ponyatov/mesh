@@ -16,6 +16,15 @@
             "problemMatcher" : []
         },
         {
+            "label"          : "make: watch",
+            "type"           : "shell",
+            "command"        : "make watch",
+            "dependsOn"      : "CMake: build",
+            "problemMatcher" : [],
+            "presentation"   : {"showReuseMessage": true, "focus": true, "reveal": "silent", "close": false},
+            "group"          : {"kind": "build", "isDefault": true}
+        },
+        {
             "label"          : "AI: context",
             "type"           : "shell",
             "command"        : "make ai",
