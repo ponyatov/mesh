@@ -13,12 +13,14 @@ extern int main(int argc, char *argv[]);  ///< POSIX entry point
 extern void arg(int argc, char *argv);    ///< process command line argument
 /// @}
 
-/// @defgroup vm vm
+/// @defgroup vm VM
+/// @brief FORTH Virtual Machine (for scripting)
 /// @{
 
 /// @defgroup gc gc
 
 /// @defgroup ograph ograph
+/// @brief object graph
 /// @{
 
 /// @brief root object graph class
@@ -35,7 +37,7 @@ class Object {
     virtual std::string dump(std::string prefix = "");
 };
 
-/// @defgroup prim prim
+/// @defgroup prim primitive
 
 /// @brief primitive types
 /// @ingroup prim
@@ -66,16 +68,19 @@ class Num : public Primitive {
 /// @}
 
 /// @defgroup config config
+/// @brief @ref memory sizes
 /// @{
-/// @ref M size
+
+/// @brief @ref M size
 #define Msz 0x10000
-/// @ref R size
+/// @brief @ref R size
 #define Rsz 0x100
-/// @ref D size
+/// @brief @ref D size
 #define Dsz 0x10
 /// @}
 
 /// @defgroup type type
+/// @brief @ref vm specific types
 /// @{
 typedef uint8_t byte;   ///< single byte
 typedef uint16_t addr;  ///< short @ref M address
@@ -85,6 +90,10 @@ typedef Object *cell;   ///< storage element type
 /// @defgroup memory memory
 /// @{
 
+extern cell M[Msz];  ///< main memory
+extern addr Cp;      ///< compiler pointer
+extern addr R[Rsz];  ///< return stack
+extern byte Rp;      ///< @ref R pointer
 extern cell D[Dsz];  ///< data stack
 extern byte Dp;      ///< @ref D pointer
 
@@ -103,7 +112,8 @@ extern void dump();  ///< dump @ref VM state
 
 /// @}
 
-/// @defgroup dpdk dpdk
+/// @defgroup net net
+/// @brief raw networking
 /// @{
 extern void list();  ///< list available nic's
 /// @}
