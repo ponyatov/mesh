@@ -124,6 +124,8 @@ std::string Num::val() {
     return os.str();
 }
 
+IO::IO() : Object() {}
+
 bool Eth::init() {  // int argc, char *argv[]) {  //
     pcpp::CoreMask coreMask = pcpp::getCoreMaskForAllMachineCores();
     // rte_eal_init(argc, argv);
@@ -174,7 +176,7 @@ void Eth::list() {
     std::cerr << "\n";
 }
 
-Eth::Eth(int port) : Object() {  //
+Eth::Eth(int port) : IO() {  //
     std::cerr << "\nopening port:" << port;
     dev = pcpp::DpdkDeviceList::getInstance().getDeviceByPort(port);
     assert(dev != nullptr);
@@ -188,6 +190,7 @@ Eth::Eth(int port) : Object() {  //
               << "\tMTU:" << mtu                        //
               << "\tPMD:" << pmdname << '/' << pmdtype  //
               << "\n";
+    open();
 }
 
 void Eth::close() {
@@ -214,3 +217,92 @@ std::string Eth::val() {
        << "#duplex:" << duplex << "#speed:" << speed;
     return os.str();
 }
+
+Recv::Recv(Eth *eth) {
+    _eth = eth;
+    _dev = eth->dev;
+}
+
+Send::Send(Eth *eth) {
+    _eth = eth;
+    _dev = eth->dev;
+}
+
+bool Recv::run(uint32_t coreId) {
+    _coreId = coreId;
+    _stop = false;
+
+    const int MBUF_SZ = 1;  // 64
+
+    pcpp::MBufRawPacket *mbufArr[MBUF_SZ] = {};
+
+    std::cerr << "\nrecv:" << "\n";
+
+    while (!_stop) {
+        uint16_t numOfPackets = _dev->receivePackets(mbufArr, MBUF_SZ, 0);
+        if (numOfPackets) {
+            std::cerr << "\npackets:" << numOfPackets << "\n";
+            stop();
+        }
+    }
+
+    std::cerr << "\n";
+    return true;
+}
+
+bool Send::run(uint32_t coreId) {
+    _coreId = coreId;
+    _stop = false;
+
+    const int MBUF_SZ = 1;  // 64
+
+    pcpp::MBufRawPacket *mbufArr[MBUF_SZ] = {};
+
+    std::cerr << "\nsend:" << "\n";
+
+    pcpp::Packet packet(0x11);
+
+    pcpp::EthLayer eth_layer(pcpp::MacAddress(RECVMAC),
+                             pcpp::MacAddress(BROADCAST));
+
+    packet.addLayer(&eth_layer);
+
+    pcpp::IPv4Layer ipv4_layer(pcpp::IPv4Address(SENDIP),
+                               pcpp::IPv4Address(RECVIP));
+    ipv4_layer.getIPv4Header()->ipId =
+        pcpp::hostToNet16(4000);                  // multipart package
+    ipv4_layer.getIPv4Header()->timeToLive = 11;  // shorter path
+
+    packet.addLayer(&ipv4_layer);
+
+    pcpp::UdpLayer udp_layer(12345, 54321);
+    packet.addLayer(&udp_layer);
+
+    packet.computeCalculateFields();
+
+    while (!_stop) {
+        // uint8_t data[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
+        //                   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+        // timeval ts = {0, 0};
+        // pcpp::RawPacket packet = pcpp::RawPacket(data, sizeof(data), ts,
+        // false);
+        uint16_t numOfPackets = _dev->sendPacket(packet);
+        std::cerr << '.';
+        // if (numOfPackets) {
+        //     std::cerr << "\npackets:" << numOfPackets << "\n";
+        //     stop();
+        // }
+        // std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(SEND_INTERVAL_MS));
+    }
+
+    std::cerr << "\n";
+    return true;
+}
+
+uint32_t Recv::getCoreId() const { return _coreId; }
+uint32_t Send::getCoreId() const { return _coreId; }
+
+void Recv::stop() { _stop = true; }
+void Send::stop() { _stop = true; }

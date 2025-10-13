@@ -34,6 +34,8 @@ n [0-9]
 "list"          {return LIST;}
 "dpdk"          {return DPDK;}
 "status"        {return STATUS;}
+"recv"          {return RECV;}
+"send"          {return SEND;}
 
 [ \t\r\n]+      {}                  // drop spaces
 .               {yyerror("");}      // any undetected char

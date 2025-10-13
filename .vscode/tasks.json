@@ -25,6 +25,14 @@
             "group"          : {"kind": "build", "isDefault": true}
         },
         {
+            "label"          : "python: http",
+            "type"           : "shell",
+            "command"        : "python3 -m http.server",
+            "problemMatcher" : [],
+            "presentation"   : {"showReuseMessage": true, "focus": true, "reveal": "silent", "close": false},
+            "group"          : {"kind": "build", "isDefault": true}
+        },
+        {
             "label"          : "AI: context",
             "type"           : "shell",
             "command"        : "make ai",

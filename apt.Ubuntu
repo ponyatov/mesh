@@ -1,7 +1,7 @@
 git make curl fzf
-doxygen clang-format
+doxygen graphviz clang-format
 build-essential pkg-config cmake g++ gdb
 flex bison ragel libreadline-dev
 python3 python3-venv python3-pytest python3-autopep8
-entr tshark
+entr tshark python3-scapy
 libpcap-dev libnuma-dev libibverbs-dev
