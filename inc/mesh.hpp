@@ -7,17 +7,23 @@
 #include <iostream>
 #include <sstream>
 
+/// @defgroup REPL REPL
+
 /// @defgroup main main
+/// @brief system startup
+/// @ingroup REPL
 /// @{
 extern int main(int argc, char *argv[]);  ///< POSIX entry point
 extern void arg(int argc, char *argv);    ///< process command line argument
 /// @}
 
+/// @defgroup gc gc
+/// @brief Garbage collection
+/// @ingroup memory
+
 /// @defgroup vm VM
 /// @brief FORTH Virtual Machine (for scripting)
 /// @{
-
-/// @defgroup gc gc
 
 /// @defgroup ograph ograph
 /// @brief object graph
@@ -97,16 +103,23 @@ extern byte Rp;      ///< @ref R pointer
 extern cell D[Dsz];  ///< data stack
 extern byte Dp;      ///< @ref D pointer
 
-extern void push(Object *o);  ///< `( -- o )` push to @ref D
-extern Object *pop();         ///< `( o -- )` pop from @ref D
-extern Object *top();         ///< `( o -- o )` get @ref D top
-extern void clear();          ///< `( ... -- )` clear @ref D
 /// @}
 
 /// @defgroup command command
 /// @{
 
-extern void dump();  ///< dump @ref VM state
+/// @name debug
+/// @{
+extern void dump();           ///< `( -- )` dump @ref VM state
+/// @}
+
+/// @name stack
+/// @{
+extern void push(Object *o);  ///< `( -- o )` push to @ref D
+extern Object *pop();         ///< `( o -- )` pop from @ref D
+extern Object *top();         ///< `( o -- o )` get @ref D top
+extern void clear();          ///< `( ... -- )` clear @ref D
+/// @}
 
 /// @}
 
@@ -119,6 +132,8 @@ extern void list();  ///< list available nic's
 /// @}
 
 /// @defgroup skelex skelex
+/// @brief syntax parser
+/// @ingroup REPL
 /// @{
 extern int yylex();                    ///< lexer
 extern int yylineno;                   ///< current file line number

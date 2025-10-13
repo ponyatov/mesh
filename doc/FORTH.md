@@ -14,11 +14,13 @@
 - `# line comment`
 - `/* block comment */`
 
+## Debug
+
+- `? ( -- )` dump stack content
+
 ## Data Stack
 
 - `. ( -- )` clear stack
-- `? ( ... -- ... )` dump stack content
-
 
 ## Raw Networking
 

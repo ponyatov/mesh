@@ -20,6 +20,7 @@ n [0-9]
 {s}?{n}+\.{n}?  TOKEN(Num,NUM)
 {s}?{n}+        TOKEN(Int,INT)
 
+"dump"          {return DUMP;}
 "?"             {return DUMP;}
 "clear"         {return CLEAR;}
 "."             {return CLEAR;}
