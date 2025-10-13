@@ -21,6 +21,9 @@ n [0-9]
 {s}?{n}+        TOKEN(Int,INT)
 
 "?"             {return DUMP;}
+"clear"         {return CLEAR;}
+"."             {return CLEAR;}
+
 "list"          {return LIST;}
 
 [ \t\r\n]+      {}                  // drop spaces

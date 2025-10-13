@@ -34,19 +34,29 @@ void dump() {  //
     std::cerr << " ]\n";
 }
 
-extern void push(Object *o) {
+void push(Object *o) {
     assert(Dp < Dsz);
     D[Dp++] = o;
+    o->ref++;
 }
 
-extern Object *pop() {
+Object *pop() {
     assert(Dp < Dsz);
-    return D[--Dp];
+    Object *o = D[--Dp];
+    assert(o->ref);
+    o->ref--;
+    return o;
 }
 
-extern Object *top() {
+Object *top() {
     assert(Dp < Dsz);
-    return D[Dp - 1];
+    Object *o = D[Dp - 1];
+    assert(o->ref);
+    return o;
+}
+
+void clear() {
+    for (int i = 0; i < Dp; i++) pop();
 }
 
 void list() {  //

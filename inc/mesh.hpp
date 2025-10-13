@@ -16,16 +16,20 @@ extern void arg(int argc, char *argv);    ///< process command line argument
 /// @defgroup vm vm
 /// @{
 
+/// @defgroup gc gc
+
 /// @defgroup ograph ograph
 /// @{
 
 /// @brief root object graph class
 class Object {
-    size_t ref;
     std::string tag();
     virtual std::string val();
 
    public:
+    /// @ingroup gc
+    /// reference counter
+    size_t ref;
     Object();
     virtual ~Object();
     virtual std::string dump(std::string prefix = "");
@@ -71,11 +75,11 @@ class Num : public Primitive {
 #define Dsz 0x10
 /// @}
 
-/// @defgroup type
+/// @defgroup type type
 /// @{
 typedef uint8_t byte;   ///< single byte
 typedef uint16_t addr;  ///< short @ref M address
-typedef Object *cell;   ///< storge element type
+typedef Object *cell;   ///< storage element type
 /// @}
 
 /// @defgroup memory memory
@@ -87,6 +91,7 @@ extern byte Dp;      ///< @ref D pointer
 extern void push(Object *o);  ///< `( -- o )` push to @ref D
 extern Object *pop();         ///< `( o -- )` pop from @ref D
 extern Object *top();         ///< `( o -- o )` get @ref D top
+extern void clear();          ///< `( ... -- )` clear @ref D
 /// @}
 
 /// @defgroup command command
