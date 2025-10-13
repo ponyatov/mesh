@@ -119,6 +119,13 @@ extern void push(Object *o);  ///< `( -- o )` push to @ref D
 extern Object *pop();         ///< `( o -- )` pop from @ref D
 extern Object *top();         ///< `( o -- o )` get @ref D top
 extern void clear();          ///< `( ... -- )` clear @ref D
+
+extern void dup();    ///< `DUP `( a -- a )`
+extern void drop();   ///< `DROP `( a b -- a )`
+extern void press();  ///< `PRESS `( a b -- b )`
+extern void swap();   ///< `SWAP `( a b -- b a )`
+extern void over();   ///< `OVER `( a b -- a b a )`
+
 /// @}
 
 /// @}
@@ -127,6 +134,7 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 
 /// @defgroup net net
 /// @brief raw networking
+#include "DpdkDevice.h"
 #include "DpdkDeviceList.h"
 #include "PcapLiveDeviceList.h"
 /// @{
@@ -141,12 +149,23 @@ class Eth : public Object {
     pcpp::DpdkDevice *dev;  ///< DPDK device id
     int id;                 ///< DPDK port id (for opened @ref dev)
     std::string name;       ///< DPDK port name
-    uint32_t mtu;               ///< MTU packet size
+    int mtu;                ///< MTU packet size
+    std::string pmdname;    ///< driver name
+    int pmdtype;            ///< driver id
+
+    bool up;    ///< @ref linkStatus -> linkUp
+    int speed;  ///< @ref linkStatus -> linkSpeedMbps
+    bool duplex;///< @ref linkStatus -> linkDuplex
+    pcpp::DpdkDevice::LinkStatus linkStatus;  ///< link status info
+
    public:
-    Eth(int port);       ///< create nic with DPDK index
-    static bool init();  // int argc, char *argv[]);
-    static void list();  ///< list available nic's
-    std::string val();
+    Eth(int port);                           ///< create nic with DPDK index
+    static bool init();                      // int argc, char *argv[]);
+    static void list();                      ///< list available nic's
+    void open();                             ///< open port with Rx/Tx
+    void close();                            ///< shutdown
+    pcpp::DpdkDevice::LinkStatus &status();  ///< update @ref linkStatus
+    std::string val();                       ///<
 };
 
 /// @}

@@ -50,6 +50,7 @@ Object *pop() {
 }
 
 Object *top() {
+    assert(Dp);
     assert(Dp < Dsz);
     Object *o = D[Dp - 1];
     assert(o->ref);
@@ -58,6 +59,31 @@ Object *top() {
 
 void clear() {
     for (int i = 0; i < Dp; i++) pop();
+}
+
+extern void dup() {  //
+    push(top());
+}
+
+extern void drop() {  //
+    pop();
+}
+
+extern void press() {  //
+    Object *o = pop();
+    pop();
+    push(o);
+}
+
+extern void swap() {  //
+    Object *b = pop();
+    Object *a = pop();
+    push(b);
+    push(a);
+}
+
+extern void over() {  //
+    push(D[Dp - 2]);
 }
 
 Object::Object() : ref(0) {}
@@ -150,18 +176,41 @@ void Eth::list() {
 
 Eth::Eth(int port) : Object() {  //
     std::cerr << "\nopening port:" << port;
-    assert(dev = pcpp::DpdkDeviceList::getInstance().getDeviceByPort(port));
+    dev = pcpp::DpdkDeviceList::getInstance().getDeviceByPort(port);
+    assert(dev != nullptr);
     id = dev->getDeviceId();
     name = dev->getDeviceName();
+    pmdname = dev->getPMDName();
+    pmdtype = dev->getPMDType();
     assert(mtu = dev->getMtu());
-    std::cerr << "\n\tID:" << id    //
-              << "\tNAME:" << name  //
-              << "\n\tMRU:" << mtu  //
+    std::cerr << "\n\tID:" << id                        //
+              << "\tNAME:" << name                      //
+              << "\tMTU:" << mtu                        //
+              << "\tPMD:" << pmdname << '/' << pmdtype  //
               << "\n";
+}
+
+void Eth::close() {
+    dev->close();  // dev = nullptr;
+}
+
+void Eth::open() {        //
+    assert(dev->open());  // dev->openMultiQueues(1, 1);
+    status();
+}
+
+pcpp::DpdkDevice::LinkStatus &Eth::status() {
+    dev->getLinkStatus(linkStatus);
+    up = linkStatus.linkUp;
+    speed = linkStatus.linkSpeedMbps;
+    duplex =
+        (linkStatus.linkDuplex == pcpp::DpdkDevice::LinkStatus::FULL_DUPLEX);
+    return linkStatus;
 }
 
 std::string Eth::val() {
     std::ostringstream os;
-    os << id << '/' << name << '#' << mtu;
+    os << id << '/' << name << "#mtu:" << mtu << "#up:" << up
+       << "#duplex:" << duplex << "#speed:" << speed;
     return os.str();
 }
