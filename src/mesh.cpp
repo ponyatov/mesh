@@ -41,6 +41,7 @@ void push(Object *o) {
 }
 
 Object *pop() {
+    assert(Dp > 0);
     assert(Dp < Dsz);
     Object *o = D[--Dp];
     assert(o->ref);
@@ -107,7 +108,6 @@ bool Eth::init() {  // int argc, char *argv[]) {  //
 bool Eth::initialized = false;
 
 void Eth::list() {
-    if (!Eth::initialized) Eth::initialized = Eth::init();
     // PCAP
     pcpp::PcapLiveDeviceList &pcapDeviceList =
         pcpp::PcapLiveDeviceList::getInstance();
@@ -127,22 +127,41 @@ void Eth::list() {
         }
     }
     // DPDK
-    // auto dpdkDeviceList = pcpp::DpdkDeviceList::getInstance();
-
+    if (!Eth::initialized) Eth::initialized = Eth::init();
     auto dpdkDeviceList =
         pcpp::DpdkDeviceList::getInstance().getDpdkDeviceList();
     std::cerr << "\nDPDK:";
     for (auto &dev : dpdkDeviceList) {  //
         auto mtu = dev->getMtu();
         if (mtu) {
-            std::cerr << "\n\t" << dev->getDeviceId()           //
+            std::cerr << "\n\tPORT:" << dev->getDeviceId()      //
                       << " ( " << dev->getDeviceName() << " )"  //
                       << "\n\t\tMAC:" << dev->getMacAddress()   //
-                      << dev->getPciAddress() << dev->getPMDName() << dev->getPMDType()
-                      << "\tMTU:" << mtu                        //
+                      << "\n\t\tPCI:" << dev->getPciAddress()   //
+                      << "\n\t\tPMD:" << dev->getPMDName()      //
+                      << "/" << dev->getPMDType()               //
+                      << "\n\t\tMTU:" << mtu                    //
                 ;
         }
     }
     //
     std::cerr << "\n";
+}
+
+Eth::Eth(int port) : Object() {  //
+    std::cerr << "\nopening port:" << port;
+    assert(dev = pcpp::DpdkDeviceList::getInstance().getDeviceByPort(port));
+    id = dev->getDeviceId();
+    name = dev->getDeviceName();
+    assert(mtu = dev->getMtu());
+    std::cerr << "\n\tID:" << id    //
+              << "\tNAME:" << name  //
+              << "\n\tMRU:" << mtu  //
+              << "\n";
+}
+
+std::string Eth::val() {
+    std::ostringstream os;
+    os << id << '/' << name << '#' << mtu;
+    return os.str();
 }

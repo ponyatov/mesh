@@ -1,9 +1,9 @@
 #pragma once
 
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include <iostream>
 #include <sstream>
@@ -56,9 +56,8 @@ class Primitive : public Object {
 /// @brief integer number
 /// @ingroup prim
 class Int : public Primitive {
-    int value;
-
    public:
+    int value;
     Int(char *V);
     std::string val();
 };
@@ -137,10 +136,17 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 class Eth : public Object {
     static bool initialized;
 
-   public:
     static const uint32_t mBufPoolSize = DEFAULT_MBUF_POOL_SIZE;
+
+    pcpp::DpdkDevice *dev;  ///< DPDK device id
+    int id;                 ///< DPDK port id (for opened @ref dev)
+    std::string name;       ///< DPDK port name
+    uint32_t mtu;               ///< MTU packet size
+   public:
+    Eth(int port);       ///< create nic with DPDK index
     static bool init();  // int argc, char *argv[]);
     static void list();  ///< list available nic's
+    std::string val();
 };
 
 /// @}

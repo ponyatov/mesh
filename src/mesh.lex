@@ -26,6 +26,7 @@ n [0-9]
 "."             {return CLEAR;}
 
 "list"          {return LIST;}
+"dpdk"          {return DPDK;}
 
 [ \t\r\n]+      {}                  // drop spaces
 .               {yyerror("");}      // any undetected char
