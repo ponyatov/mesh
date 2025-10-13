@@ -138,6 +138,7 @@ void Eth::list() {
             std::cerr << "\n\t" << dev->getDeviceId()           //
                       << " ( " << dev->getDeviceName() << " )"  //
                       << "\n\t\tMAC:" << dev->getMacAddress()   //
+                      << dev->getPciAddress() << dev->getPMDName() << dev->getPMDType()
                       << "\tMTU:" << mtu                        //
                 ;
         }

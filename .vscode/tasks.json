@@ -16,6 +16,16 @@
             "problemMatcher" : []
         },
         {
+            "label"          : "eth: list",
+            "type"           : "shell",
+            "command"        : "/usr/bin/sudo",
+            "args"           : ["${command:cmake.launchTargetPath}","lib/${workspaceFolderBasename}.ini"],
+            "dependsOn"      : "CMake: build",
+            "problemMatcher" : [],
+            "presentation"   : {"showReuseMessage": true, "focus": true, "reveal": "silent", "close": false},
+            "group"          : {"kind": "build", "isDefault": true}
+        },
+        {
             "label"          : "AI: context",
             "type"           : "shell",
             "command"        : "make ai",
