@@ -1,9 +1,6 @@
 {
     "files.exclude": {
         "doc/html": true, "**/node_modules/**": true,
-        "bin/py*": true, "bin/pip*": true,
-        "bin/?ctivate*": true, "bin/autopep*": true,
-        "lib/python*": true, "lib64":true, "include":true,
     },
     "files.watcherExclude": {
         "bin/**": true, "tmp/**": true, "ref/**": true,
