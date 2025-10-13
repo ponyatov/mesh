@@ -38,6 +38,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     -Wl,--start-group pcap 
         ${A}
         ${PCPP_LIBRARIES}
+        ${DPDK_LIBRARIES}
     -Wl,--end-group
 ) # -static
 

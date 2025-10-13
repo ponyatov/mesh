@@ -9,8 +9,8 @@
 %%
 ini:|ini command    // recursive parsing
 
-command : DUMP      { dump();   }
-        | CLEAR     { clear();  }
-        | LIST      { list();   }
-        | INT       { push($1); } 
-        | NUM       { push($1); }
+command : DUMP      { dump();       }
+        | CLEAR     { clear();      }
+        | LIST      { Eth::list();  }
+        | INT       { push($1);     } 
+        | NUM       { push($1);     }

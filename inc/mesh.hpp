@@ -110,7 +110,7 @@ extern byte Dp;      ///< @ref D pointer
 
 /// @name debug
 /// @{
-extern void dump();           ///< `( -- )` dump @ref VM state
+extern void dump();  ///< `( -- )` dump @ref VM state
 /// @}
 
 /// @name stack
@@ -127,9 +127,21 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 
 /// @defgroup net net
 /// @brief raw networking
+#include "DpdkDeviceList.h"
 #include "PcapLiveDeviceList.h"
 /// @{
-extern void list();  ///< list available nic's
+
+#define DEFAULT_MBUF_POOL_SIZE (0x10000 - 1)
+
+class Eth : public Object {
+    static bool initialized;
+
+   public:
+    static const uint32_t mBufPoolSize = DEFAULT_MBUF_POOL_SIZE;
+    static bool init();  // int argc, char *argv[]);
+    static void list();  ///< list available nic's
+};
+
 /// @}
 
 /// @defgroup skelex skelex

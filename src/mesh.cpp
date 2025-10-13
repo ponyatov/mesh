@@ -59,12 +59,6 @@ void clear() {
     for (int i = 0; i < Dp; i++) pop();
 }
 
-void list() {  //
-pcpp::PcapLiveDeviceList& deviceList = pcpp::PcapLiveDeviceList::getInstance();
-    std::cerr << "list:"
-              << "\n";
-}
-
 Object::Object() : ref(0) {}
 
 Object::~Object() { assert(!ref); }
@@ -101,4 +95,53 @@ std::string Num::val() {
     std::ostringstream os;
     os << value;
     return os.str();
+}
+
+bool Eth::init() {  // int argc, char *argv[]) {  //
+    pcpp::CoreMask coreMask = pcpp::getCoreMaskForAllMachineCores();
+    // rte_eal_init(argc, argv);
+    assert(pcpp::DpdkDeviceList::initDpdk(coreMask, Eth::mBufPoolSize));
+    return true;
+}
+
+bool Eth::initialized = false;
+
+void Eth::list() {
+    if (!Eth::initialized) Eth::initialized = Eth::init();
+    // PCAP
+    pcpp::PcapLiveDeviceList &pcapDeviceList =
+        pcpp::PcapLiveDeviceList::getInstance();
+    const std::vector<pcpp::PcapLiveDevice *> &devices =
+        pcapDeviceList.getPcapLiveDevicesList();
+    std::cerr << "\nPCAP:";
+    for (auto *dev : devices) {
+        auto mtu = dev->getMtu();
+        if (mtu) {
+            std::cerr << "\n\t" << dev->getName()              //
+                      << " ( " << dev->getDesc() << " )"       //
+                      << "\n\t\tMAC:" << dev->getMacAddress()  //
+                      << "\tMTU:" << mtu                       //
+                      << "\n\t\tIP:" << dev->getIPv4Address()  //
+                      << "\tGW:" << dev->getDefaultGateway()   //
+                ;
+        }
+    }
+    // DPDK
+    // auto dpdkDeviceList = pcpp::DpdkDeviceList::getInstance();
+
+    auto dpdkDeviceList =
+        pcpp::DpdkDeviceList::getInstance().getDpdkDeviceList();
+    std::cerr << "\nDPDK:";
+    for (auto &dev : dpdkDeviceList) {  //
+        auto mtu = dev->getMtu();
+        if (mtu) {
+            std::cerr << "\n\t" << dev->getDeviceId()           //
+                      << " ( " << dev->getDeviceName() << " )"  //
+                      << "\n\t\tMAC:" << dev->getMacAddress()   //
+                      << "\tMTU:" << mtu                        //
+                ;
+        }
+    }
+    //
+    std::cerr << "\n";
 }

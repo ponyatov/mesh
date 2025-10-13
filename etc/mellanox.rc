@@ -1,0 +1,47 @@
+#!/bin/sh
+
+ETH1=enp1s0np0
+ETH2=enp2s0np1
+PCI=01:00.0
+
+DRIVER=vfio-pci
+HUGESIZE=2048
+
+DPDK_VERSION=24.11.3
+DPDK_ROOT=/opt/dpdk/dpdk-stable-$DPDK_VERSION/mydpdk
+DEVBIND=$DPDK_ROOT/bin/dpdk-devbind.py
+TESTPMD=$DPDK_ROOT/bin/dpdk-testpmd
+DPDKPY=lib/pcpp/setup_dpdk.py
+
+# выполняем один раз перед началом работы:
+## systemd: /etc/systemd/system/veth@.service -> etc/veth.service -> etc/veth.rc 
+echo 1 | sudo tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# cat /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# забираем
+sudo $DEVBIND -u 0000:01:00.0
+# привязываем
+sudo $DEVBIND --bind=vfio-pci 01:00.0
+# проверка статуса
+$DEVBIND -s
+# проверяем тестилкой из DPDK
+sudo $TESTPMD -a $PCI
+# запускаем приложение, собраное через CMake.preset=dpdk
+sudo bin/veth --log-level=debug
+
+# DPDK setup script from pcpp build/ dir
+# includes:
+#   sudo ip link set $ETH down
+#   sudo $DEVBIND --bind=vfio-pci $PCI
+sudo $DPDKPY setup -r $DPDK_ROOT -g $HUGESIZE -i $ETH1 -m $DRIVER
+sudo $DPDKPY setup -r $DPDK_ROOT -g $HUGESIZE -i $ETH2 -m $DRIVER
+
+# check status
+ip addr
+$DPDKPY status
+$DEVBIND -s
+# Network devices using DPDK-compatible driver
+# ============================================
+# 0000:01:00.0 'MT27800 Family [ConnectX-5] 1017' drv=vfio-pci unused=mlx5_core,igb_uio,uio_pci_generi
+
+sudo $DPDKPY restore
+$DPDKPY status
