@@ -16,10 +16,9 @@
             "problemMatcher" : []
         },
         {
-            "label"          : "eth: list",
+            "label"          : "make: watch",
             "type"           : "shell",
-            "command"        : "/usr/bin/sudo",
-            "args"           : ["${command:cmake.launchTargetPath}","lib/${workspaceFolderBasename}.ini"],
+            "command"        : "make watch",
             "dependsOn"      : "CMake: build",
             "problemMatcher" : [],
             "presentation"   : {"showReuseMessage": true, "focus": true, "reveal": "silent", "close": false},
