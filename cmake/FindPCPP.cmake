@@ -12,9 +12,11 @@ include(FindPackageHandleStandardArgs)
 #  PCPP_VERSION, the version of the library
 # ~~~
 
+set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${CMAKE_SOURCE_DIR}/lib/pcpp/lib/pkgconfig")
+
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PCPP QUIET IMPORTED_TARGET libPCPP>=1.10.3)
+  pkg_check_modules(PCPP QUIET IMPORTED_TARGET PcapPlusPlus=25.05)
 endif()
 
 if(PCPP_FOUND)

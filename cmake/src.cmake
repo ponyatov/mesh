@@ -23,6 +23,8 @@ file(GLOB H
      cpu/inc/*.h*  cpu/${CPU}/inc/*.h*
     arch/inc/*.h* arch/${ARCH}/inc/*.h*
       os/inc/*.h*   os/${OS}/inc/*.h*
+    # net
+    lib/pcpp/include/pcapplusplus/*.h*
 )
 
 file(GLOB INC
@@ -34,10 +36,11 @@ file(GLOB INC
      cpu/inc  cpu/${CPU}/inc
     arch/inc arch/${ARCH}/inc
       os/inc   os/${OS}/inc
+    # net
+    lib/pcpp/include/pcapplusplus
 )
 include_directories(${INC})
 
-file(GLOB A
-    RELATIVE ${CMAKE_SOURCE_DIR}
-    lib/*.a
-)
+# file(GLOB A
+#     RELATIVE ${CMAKE_SOURCE_DIR}
+# )

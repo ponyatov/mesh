@@ -60,6 +60,7 @@ void clear() {
 }
 
 void list() {  //
+pcpp::PcapLiveDeviceList& deviceList = pcpp::PcapLiveDeviceList::getInstance();
     std::cerr << "list:"
               << "\n";
 }

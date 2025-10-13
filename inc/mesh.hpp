@@ -127,6 +127,7 @@ extern void clear();          ///< `( ... -- )` clear @ref D
 
 /// @defgroup net net
 /// @brief raw networking
+#include "PcapLiveDeviceList.h"
 /// @{
 extern void list();  ///< list available nic's
 /// @}

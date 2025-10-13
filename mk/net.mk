@@ -8,6 +8,8 @@ PCPP_CFG += -DPCAPPP_BUILD_PCAPPP=ON
 # -msse4.1
 PCPP_CFG += -DCMAKE_C_FLAGS="-march=native"
 PCPP_CFG += -DCMAKE_CXX_FLAGS="-march=native"
+PCPP_CFG += -DPCAPPP_INSTALL_CMAKEDIR=$(LIB)/pcpp/cmake
+PCPP_CFG += -DPCAPPP_INSTALL_CMAKEDIR=$(LIB)/pcpp/include
 
 .PHONY: pcpp
 pcpp: lib/pcpp/setup_dpdk.py

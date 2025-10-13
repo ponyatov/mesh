@@ -35,7 +35,10 @@ add_executable(${CMAKE_PROJECT_NAME}
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE lib/pcpp/lib)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    -Wl,--start-group pcap ${A} -Wl,--end-group
+    -Wl,--start-group pcap 
+        ${A}
+        ${PCPP_LIBRARIES}
+    -Wl,--end-group
 ) # -static
 
 include(install) # target install
