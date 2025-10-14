@@ -3,5 +3,5 @@ doxygen graphviz clang-format
 build-essential pkg-config cmake g++ gdb
 flex bison ragel libreadline-dev
 python3 python3-venv python3-pytest python3-autopep8
-entr tshark python3-scapy
+entr tshark python3-scapy net-tools arping
 libpcap-dev libnuma-dev libibverbs-dev

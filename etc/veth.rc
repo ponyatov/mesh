@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# sudo systemctl status veth@dev01
+
+## 0000:01:00.0
+## 'MT27800 Family [ConnectX-5] 1017'
+## if=enp1s0np0 drv=mlx5_core unused=igb_uio,vfio-pci,uio_pci_generic
+ETH1=enp1s0np0
+ETH2=enp2s0np1
+PCI=0000:01:00.0
+DRIVER=vfio-pci
+HUGESIZE=2048
+
+ETH1IP=10.120.101.111
+RECVIP=10.120.101.11
+
+DPDK_VERSION=24.11.3
+DPDK_ROOT=/opt/dpdk/dpdk-stable-$DPDK_VERSION/mydpdk
+DPDK_ROOT=/usr/local
+DEVBIND=$DPDK_ROOT/bin/dpdk-devbind.py
+DPDKPY=lib/pcpp/setup_dpdk.py
+
+echo 1 | tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# cat /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# ip addr
+# $DPDKPY status
+
+sudo $DPDKPY setup -r $DPDK_ROOT -g $HUGESIZE -i $ETH1 -m $DRIVER
+sudo $DPDKPY setup -r $DPDK_ROOT -g $HUGESIZE -i $ETH2 -m $DRIVER
+# ip addr
+# $DPDKPY status -v
+# 0000:01:00.0 drv=vfio-pci unused=mlx5_core,igb_uio,uio_pci_generic
+
+# cat /proc/meminfo | grep Huge
+# cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+# sudo bin/veth -list
+
+## run daemon:
+## bin/veth -ctl 10.120.100.39 -send $ETH
+
+## stop daemon:
+## sudo $DPDKPY restore
+## sudo ip addr del $ETH1IP dev $ETH1 ; ip addr
+## sudo ip addr add $ETH1IP/24 dev $ETH1 ; ip addr
+RECVPING="ping -c1 -t1 -W1 -I $ETH1 $RECVIP"
+# ping -c1 $ETH1IP ; ping -c1 $RECVIP
+# arp  -a  $ETH1IP ; arp  -a  $RECVIP
+# sudo arping -I $ETH1 $ETH1IP
+# sudo arping -c11 -I $ETH1 $RECVIP ; arp
+# sudo ip neigh flush all ; sudo arping -c1 -I $ETH1 $RECVIP ; arp
+# sudo ip neigh flush all ; $RECVPING ; arp
+sudo arp -s 

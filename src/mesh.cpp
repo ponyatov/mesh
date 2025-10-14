@@ -262,8 +262,11 @@ bool Send::run(uint32_t coreId) {
 
     pcpp::Packet packet(0x11);
 
+    pcpp::EthLayer eth_arp(pcpp::MacAddress(RECVMAC),
+                            pcpp::MacAddress(BROADCAST));
+
     pcpp::EthLayer eth_layer(pcpp::MacAddress(RECVMAC),
-                             pcpp::MacAddress(BROADCAST));
+                             pcpp::MacAddress(RECVMAC));
 
     packet.addLayer(&eth_layer);
 
