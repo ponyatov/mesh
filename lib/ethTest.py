@@ -28,6 +28,7 @@ TESTIP = '10.120.101.11'
 TESTMAC = 'e8:eb:d3:93:42:91'
 
 SENDIP = '10.120.101.111'
+RECVIP = '10.120.101.11'
 
 sendp(frame, iface=ETH1)
 
