@@ -15,7 +15,6 @@ ETH1IP=10.120.101.111
 RECVIP=10.120.101.11
 
 DPDK_VERSION=24.11.3
-DPDK_ROOT=/opt/dpdk/dpdk-stable-$DPDK_VERSION/mydpdk
 DPDK_ROOT=/usr/local
 DEVBIND=$DPDK_ROOT/bin/dpdk-devbind.py
 DPDKPY=lib/pcpp/setup_dpdk.py

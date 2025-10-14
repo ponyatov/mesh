@@ -1,0 +1,21 @@
+#!/bin/sh
+## stop DPDK
+
+. $(dirname "$0")/veth.config
+
+# systemctl daemon-reload
+# systemctl status veth@dev01
+# systemctl stop veth@dev01
+
+$DPDKPY restore
+echo 0 | tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+
+ip addr add $IP1/24 dev $ETH1
+ping -c1 -I$ETH1 $IPR
+# arp -i$ETH1 $IPR
+# arp -i$ETH1 -a $IPR
+# arp -i$ETH1 -d $IPR
+
+# $DEVBIND -s
+# $DEVBIND -u $PCI1 ; $DEVBIND -s $PCI1 -b mlx5_core
+# $DEVBIND -u $PCI2 ; $DEVBIND -s $PCI2 -b mlx5_core

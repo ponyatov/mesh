@@ -1,0 +1,27 @@
+#!/bin/sh
+## start DPDK
+
+. $(dirname "$0")/veth.config
+
+# systemctl daemon-reload
+# systemctl status veth@dev01
+# systemctl start veth@dev01
+
+echo 1 | tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# cat /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+# ip addr
+# $DPDKPY status
+
+$DPDKPY setup -r $DPDK_ROOT -g $HUGESIZE -i $ETH1 -m $DRIVER
+
+# $DEVBIND -s
+# ip addr del $IP1/24 dev $ETH1
+# echo $DEVBIND -s $PCI1
+# $DEVBIND -s $PCI2
+
+# cat /proc/meminfo | grep Huge
+# cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+# bin/veth -list
+
+## run daemon:
+## bin/veth -ctl 10.120.100.39 -send $ETH
