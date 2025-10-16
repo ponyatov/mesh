@@ -36,6 +36,7 @@ n [0-9]
 "status"        {return STATUS;}
 "recv"          {return RECV;}
 "send"          {return SEND;}
+"garp"          {return GARP;}
 
 [ \t\r\n]+      {}                  // drop spaces
 .               {yyerror("");}      // any undetected char

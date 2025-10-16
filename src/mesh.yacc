@@ -7,7 +7,7 @@
 %token      DUMP CLEAR
 %token      DUP DROP PRESS SWAP OVER
 %token<o>   INT NUM
-%token      LIST DPDK STATUS RECV SEND
+%token      LIST DPDK STATUS RECV SEND GARP
 %%
 ini:|ini command    // recursive parsing
 
@@ -25,6 +25,7 @@ command : DUMP      { dump();                               }
         | STATUS    { ((Eth*)pop())->status();              }
         | RECV      { Recv((Eth*)pop()).run(0); }
         | SEND      { Send((Eth*)pop()).run(0); }
+        | GARP      { Garp((Eth*)pop()).run(0); }
         // numbers
         | INT       { push($1);                             }
         | NUM       { push($1);                             }

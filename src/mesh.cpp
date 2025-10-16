@@ -228,9 +228,14 @@ Send::Send(Eth *eth) {
     _dev = eth->dev;
 }
 
+Garp::Garp(Eth *eth) {
+    _eth = eth;
+    _dev = eth->dev;
+}
+
 bool Recv::run(uint32_t coreId) {
     _coreId = coreId;
-    _stop = false;
+    _run = false;
 
     const int MBUF_SZ = 1;  // 64
 
@@ -238,7 +243,7 @@ bool Recv::run(uint32_t coreId) {
 
     std::cerr << "\nrecv:" << "\n";
 
-    while (!_stop) {
+    while (_run) {
         uint16_t numOfPackets = _dev->receivePackets(mbufArr, MBUF_SZ, 0);
         if (numOfPackets) {
             std::cerr << "\npackets:" << numOfPackets << "\n";
@@ -250,39 +255,62 @@ bool Recv::run(uint32_t coreId) {
     return true;
 }
 
+pcpp::MacAddress sendMac(SENDMAC);
+pcpp::MacAddress recvMac(RECVMAC);
+pcpp::IPv4Address sendIp(SENDIP);
+pcpp::IPv4Address recvIp(RECVIP);
+
+bool Garp::run(uint32_t coreId) {
+    _coreId = coreId;
+    _run = true;
+
+    std::cerr << "\ngarp:\n";
+    std::cerr << '\t' << sendMac << '\t' << sendIp << "\n";
+    std::cerr << '\t' << recvMac << '\t' << recvIp << "\n";
+
+    pcpp::Packet packet(0x11);
+
+    pcpp::EthLayer eth_arp(sendMac, recvMac, PCPP_ETHERTYPE_ARP);
+    packet.addLayer(&eth_arp);
+
+    pcpp::ArpLayer arp_layer(pcpp::ARP_REQUEST, sendMac, sendIp, recvMac,
+                             recvIp);
+    packet.addLayer(&arp_layer);
+
+    packet.computeCalculateFields();
+
+    while (_run) {
+        _dev->sendPacket(packet);
+        _run = false;
+        if (!_run)
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(GARP_INTERVAL_MS));
+    }
+
+    return true;
+}
+
 bool Send::run(uint32_t coreId) {
     _coreId = coreId;
-    _stop = false;
-
-    const int MBUF_SZ = 1;  // 64
-
-    pcpp::MBufRawPacket *mbufArr[MBUF_SZ] = {};
+    _run = true;
 
     std::cerr << "\nsend:" << "\n";
 
     pcpp::Packet packet(0x11);
 
-    pcpp::EthLayer eth_arp(pcpp::MacAddress(RECVMAC),
-                           pcpp::MacAddress(BROADCAST));
+    pcpp::EthLayer eth_ip(sendMac, recvMac, PCPP_ETHERTYPE_IP);
+    packet.addLayer(&eth_ip);
 
-    pcpp::EthLayer eth_layer(pcpp::MacAddress(RECVMAC),
-                             pcpp::MacAddress(BROADCAST));
-
-    packet.addLayer(&eth_layer);
-
-    pcpp::IPv4Layer ipv4_layer(pcpp::IPv4Address(SENDIP),
-                               pcpp::IPv4Address(RECVIP));
-    ipv4_layer.getIPv4Header()->ipId =
-        pcpp::hostToNet16(4000);                  // multipart package
-    ipv4_layer.getIPv4Header()->timeToLive = 11;  // shorter path
-
+    pcpp::IPv4Layer ipv4_layer(sendIp, recvIp);
     packet.addLayer(&ipv4_layer);
 
-    pcpp::UdpLayer udp_layer(12345, 54321);
-    // udp_layer.getUdpHeader()->length = pcpp::hostToNet16(1234);
+    pcpp::UdpLayer udp_layer(SENDPORT, RECVPORT);
+    ipv4_layer.getIPv4Header()->timeToLive = 1;  // shorter path
+    // ipv4_layer.getIPv4Header()->ipId =
+    //     pcpp::hostToNet16(4000);                  // multipart package
     packet.addLayer(&udp_layer);
-
-    // packet.computeCalculateFields();
+    // udp_layer.getUdpHeader()->length = pcpp::hostToNet16(1234);
+    packet.computeCalculateFields();
 
 #ifdef SEND_INTERVAL_NS
     auto interval = std::chrono::nanoseconds(SEND_INTERVAL_NS);
@@ -293,14 +321,15 @@ bool Send::run(uint32_t coreId) {
 #endif  // SEND_INTERVAL_NS
 
     size_t counter = 0;  /// sent packet autocounter
-    pcpp::PayloadLayer payloadLayer((uint8_t*)&counter, sizeof(counter));
+    pcpp::PayloadLayer payloadLayer((uint8_t *)&counter, sizeof(counter));
     packet.addLayer(&payloadLayer);
+    packet.computeCalculateFields();
 
-    while (!_stop) {
+    while (_run) {
         // auto next_packet = packet.clone();
         // next_packet.add(counter++);
-        packet.computeCalculateFields();
         uint16_t numOfPackets = _dev->sendPacket(packet);
+        _run = false;
         // if (numOfPackets) {
         //     std::cerr << "\npackets:" << numOfPackets << "\n";
         //     stop();
@@ -318,6 +347,8 @@ bool Send::run(uint32_t coreId) {
 
 uint32_t Recv::getCoreId() const { return _coreId; }
 uint32_t Send::getCoreId() const { return _coreId; }
+uint32_t Garp::getCoreId() const { return _coreId; }
 
-void Recv::stop() { _stop = true; }
-void Send::stop() { _stop = true; }
+void Recv::stop() { _run = false; }
+void Send::stop() { _run = false; }
+void Garp::stop() { _run = false; }

@@ -161,14 +161,18 @@ class IO : public Object {
 
 #define DEFAULT_MBUF_POOL_SIZE (0x10000 - 1)
 
-#define SENDMAC1 "e8:eb:d3:93:42:98"
-#define SENDMAC2 "e8:eb:d3:93:42:99"
+#define SENDMAC "e8:eb:d3:93:42:98"
 #define SENDIP "10.120.101.111"
+#define SENDMAC2 "e8:eb:d3:93:42:99"
 #define SEND_INTERVAL_MS 1111 /* ms */
+#define GARP_INTERVAL_MS 5555 /* ms */
 
-#define RECVMAC "e8:eb:d3:93:42:91"
 #define BROADCAST "ff:ff:ff:ff:ff:ff"
+#define RECVMAC "e8:eb:d3:93:42:91"
 #define RECVIP "10.120.101.11"
+
+#define SENDPORT 12345
+#define RECVPORT 54321
 
 /// @defgroup wireshark wireshark
 /// @brief remote Wireshark UDP
@@ -209,7 +213,7 @@ class Recv : public IO, pcpp::DpdkWorkerThread {
     Eth *_eth;
     pcpp::DpdkDevice *_dev;
     uint32_t _coreId;
-    bool _stop;
+    bool _run;
 
    public:
     Recv(Eth *);
@@ -222,10 +226,36 @@ class Send : public IO, pcpp::DpdkWorkerThread {
     Eth *_eth;
     pcpp::DpdkDevice *_dev;
     uint32_t _coreId;
-    bool _stop;
+    bool _run;
 
    public:
     Send(Eth *);
+    bool run(uint32_t coreId);
+    void stop();
+    uint32_t getCoreId() const;
+};
+
+extern pcpp::MacAddress sendMac;
+extern pcpp::MacAddress recvMac;
+extern pcpp::IPv4Address sendIp;
+extern pcpp::IPv4Address recvIp;
+
+// extern pcpp::EthLayer eth_arp;  ///< Ethernet layer for ARP requests
+// extern pcpp::EthLayer eth_ip;   ///< Ethernet layer for UDP send
+
+// extern pcpp::ArpLayer arp_layer;    ///< ARP requests
+// extern pcpp::IPv4Layer ipv4_layer;  ///< IPv4 layer
+// extern pcpp::UdpLayer udp_layer;    ///< UDP layer
+
+/// @brief Gratuitous ARP sender
+class Garp : public IO, pcpp::DpdkWorkerThread {
+    Eth *_eth;
+    pcpp::DpdkDevice *_dev;
+    uint32_t _coreId;
+    bool _run;
+
+   public:
+    Garp(Eth *);
     bool run(uint32_t coreId);
     void stop();
     uint32_t getCoreId() const;
