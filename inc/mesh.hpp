@@ -251,3 +251,34 @@ extern void yyerror(const char *msg);  ///< syntax error callback
         return X;                 \
     }
 /// @}
+
+/// @defgroup data data
+/// @brief customer data model
+/// @{
+
+class SensorGroup;
+
+/// @brief customer sensor
+class Sensor {
+    SensorGroup *group;        ///< exclusive group membering
+    void add(SensorGroup *g);  ///< add sensor to group
+    void rm(SensorGroup *g);   ///< remove sensor from group
+};
+
+/// @brief burst group
+class SensorGroup {
+    std::vector<Sensor *> sensors;     ///< group members
+    std::chrono::milliseconds period;  ///< data capture period (burst send)
+
+    void add(Sensor *s);  ///< add sensor to group
+    void rm(Sensor *s);   ///< remove sensor from group
+};
+
+/// @brief large binary image of raw data
+/// @details must be splitted into UDP packages bursts
+class BLOB {
+    size_t size;          ///< data size, bytes
+    SensorGroup *source;  ///< data source
+};
+
+/// @}
