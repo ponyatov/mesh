@@ -152,9 +152,10 @@ class IO : public Object {
 #include "IPv4Layer.h"
 #include "IpAddress.h"
 #include "MacAddress.h"
+#include "Packet.h"
+#include "PayloadLayer.h"
 #include "PcapLiveDeviceList.h"
 #include "RawPacket.h"
-#include "Packet.h"
 #include "UdpLayer.h"
 /// @{
 
@@ -163,11 +164,18 @@ class IO : public Object {
 #define SENDMAC1 "e8:eb:d3:93:42:98"
 #define SENDMAC2 "e8:eb:d3:93:42:99"
 #define SENDIP "10.120.101.111"
-#define SEND_INTERVAL_MS 50 /* ms */
+#define SEND_INTERVAL_MS 1111 /* ms */
 
 #define RECVMAC "e8:eb:d3:93:42:91"
 #define BROADCAST "ff:ff:ff:ff:ff:ff"
 #define RECVIP "10.120.101.11"
+
+/// @defgroup wireshark wireshark
+/// @brief remote Wireshark UDP
+/// @{
+#define WSIP "10.110.21.104"
+#define WSPORT "12345"
+//// @}
 
 /// @brief NIC representation
 class Eth : public IO {

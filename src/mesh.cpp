@@ -263,10 +263,10 @@ bool Send::run(uint32_t coreId) {
     pcpp::Packet packet(0x11);
 
     pcpp::EthLayer eth_arp(pcpp::MacAddress(RECVMAC),
-                            pcpp::MacAddress(BROADCAST));
+                           pcpp::MacAddress(BROADCAST));
 
     pcpp::EthLayer eth_layer(pcpp::MacAddress(RECVMAC),
-                             pcpp::MacAddress(RECVMAC));
+                             pcpp::MacAddress(BROADCAST));
 
     packet.addLayer(&eth_layer);
 
@@ -279,25 +279,37 @@ bool Send::run(uint32_t coreId) {
     packet.addLayer(&ipv4_layer);
 
     pcpp::UdpLayer udp_layer(12345, 54321);
+    // udp_layer.getUdpHeader()->length = pcpp::hostToNet16(1234);
     packet.addLayer(&udp_layer);
 
-    packet.computeCalculateFields();
+    // packet.computeCalculateFields();
+
+#ifdef SEND_INTERVAL_NS
+    auto interval = std::chrono::nanoseconds(SEND_INTERVAL_NS);
+    auto next_time = std::chrono::high_resolution_clock::now() + interval;
+#else
+    auto interval = std::chrono::milliseconds(SEND_INTERVAL_MS);
+    auto next_time = std::chrono::system_clock::now() + interval;
+#endif  // SEND_INTERVAL_NS
+
+    size_t counter = 0;  /// sent packet autocounter
+    pcpp::PayloadLayer payloadLayer((uint8_t*)&counter, sizeof(counter));
+    packet.addLayer(&payloadLayer);
 
     while (!_stop) {
-        // uint8_t data[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
-        //                   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-        // timeval ts = {0, 0};
-        // pcpp::RawPacket packet = pcpp::RawPacket(data, sizeof(data), ts,
-        // false);
+        // auto next_packet = packet.clone();
+        // next_packet.add(counter++);
+        packet.computeCalculateFields();
         uint16_t numOfPackets = _dev->sendPacket(packet);
-        std::cerr << '.';
         // if (numOfPackets) {
         //     std::cerr << "\npackets:" << numOfPackets << "\n";
         //     stop();
         // }
-        // std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::this_thread::sleep_for(
-            std::chrono::milliseconds(SEND_INTERVAL_MS));
+        //
+        std::cerr << counter++ << ' ';
+        //
+        std::this_thread::sleep_until(next_time);
+        next_time += interval;
     }
 
     std::cerr << "\n";

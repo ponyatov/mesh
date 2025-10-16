@@ -15,6 +15,8 @@ ping -c1 -I$ETH1 $IPR
 # arp -i$ETH1 $IPR
 # arp -i$ETH1 -a $IPR
 # arp -i$ETH1 -d $IPR
+# ip n show
+# ip n flush all
 
 # $DEVBIND -s
 # $DEVBIND -u $PCI1 ; $DEVBIND -s $PCI1 -b mlx5_core
